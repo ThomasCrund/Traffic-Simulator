@@ -18,7 +18,7 @@ class Car:
     else:
       self.weight = 1.0
     
-    if current_time > self.start_time + self.time_to_intersection and light == Light_Colour.RED:
+    if current_time >= self.start_time + self.time_to_intersection and light == Light_Colour.RED:
       self.weight += 0.2 * (current_time - self.start_time - self.time_to_intersection)
 
     return self.weight
