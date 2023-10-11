@@ -1,14 +1,8 @@
 from typing import List
-from enum import Enum
 from car import Car
-
-class Light_Colour(Enum):
-  GREEN = 1
-  ORANGE = 2
-  RED = 3
-
+from LightColour import Light_Colour
 class Sensor:
-  def __init__(self, num: int, time_to_intersection: int, sensor_order_num = True):
+  def __init__(self, num: int, time_to_intersection: int, sensor_order_num = 0):
     self.num = num
     self.time_to_intersection = time_to_intersection
     self.past_data = {}
@@ -29,7 +23,7 @@ class Road:
   def update_sensors(self, sensors_data: List[bool], light: Light_Colour, time_stamp: int):
     for sensor in self.sensors:
       sensor.update(sensors_data[sensor.num])
-      if (sensor.triggered and sensor.sensor_order_num == 1):
+      if (sensor.triggered and sensor.sensor_order_num == 0):
         car = Car(self.direction, time_stamp, light, sensor.time_to_intersection)
         self.current_cars.append(car)
       else:
@@ -74,13 +68,17 @@ class Light_Phase:
       self.current_colour = Light_Colour.RED
     return self.current_colour
   
-  
+  def needToEnd(self, time_stamp: int):
+    if self.current_colour == Light_Colour.GREEN and self.time_last_change >= self.max_green:
+      return True
+    return False
 
 class Intersection:
   def __init__(self, roads: List[Road], phases: List[Light_Phase]):
     self.roads = roads
     self.lights = {}
-    self.current_phase = Light_Phase([])
+    self.current_phase = Light_Phase([], red_time=0)
+    self.next_phase = None
     for road in roads:
       self.lights[road.direction] = Light_Colour.RED
     self.phases = phases
@@ -88,7 +86,53 @@ class Intersection:
   def process_sensor_input(self, sensors_data: List[bool], time_stamp: int):
     for road in self.roads:
       road.update_sensors(sensors_data, self.lights[road.direction], time_stamp)
-    
 
-  def change_phase(self):
+  def change_phase(self, time_stamp: int):
+
+    # find if a new phase is needed
+    if self.next_phase == None:
+
+      # Calculate the highest weighting phase
+      highest_phase = None
+      highest_weighting = 0
+      for phase in self.phases:
+        if phase.getWeight() > highest_weighting:
+          highest_weighting = phase.getWeight()
+          highest_phase = phase
+      
+      # Set the next phase
+      if highest_phase == None and highest_phase == self.change_phase:
+        # Account for the current phase being the best
+        if self.current_phase.needToEnd():
+          # Switch phase when it reaches the max time
+          self.next_phase = highest_phase
+          for phase in self.phases:
+            if phase.getWeight() > highest_weighting and phase != self.current_phase:
+              highest_weighting = phase.getWeight()
+              highest_phase = phase
+        else:
+          return
+      else:
+        # Set the next phase
+        self.next_phase = highest_phase
+
+    # Change Phase
+    if self.change_phase.setPhase(Light_Colour.RED, time_stamp) == Light_Colour.RED:
+      # Current Phase is Red
+      if (time_stamp - self.change_phase.time_last_change) >= self.change_phase.red_time:
+
+        # Set new phase green
+        if self.next_phase.setPhase(Light_Colour.GREEN, time_stamp) == Light_Colour.GREEN:
+          self.change_phase = self.next_phase
+          self.next_phase = None
+    else:
+      # Current Phase is Green or Orange, trying to make it Red once timers allow
+      self.next_phase.setPhase
+
+  def update_lights(self):
+    for road in self.roads:
+      if road in self.current_phase.roads:
+        self.lights[road.direction] = self.current_phase.current_colour
+      else:
+        self.lights[road.direction] = Light_Colour.RED
     pass

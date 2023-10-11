@@ -1,4 +1,4 @@
-from intersection import Light_Colour
+from LightColour import Light_Colour
 
 class Car:
   
