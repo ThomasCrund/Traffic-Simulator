@@ -11,6 +11,7 @@ class Car:
     self.update_weight(light, start_time)
     self.passed_sensors = 1
     self.through_intersection = False
+    self.wait_time = 0
 
   def update_weight(self, light: Light_Colour, current_time: int):
     if self.initial_light == Light_Colour.GREEN or self.initial_light == Light_Colour.ORANGE:
