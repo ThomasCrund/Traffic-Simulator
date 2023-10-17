@@ -31,6 +31,7 @@ class Road:
         exit(1)
     
     for car in self.current_cars:
+      car.update_weight(light, time_stamp)
       if (light != Light_Colour.RED and time_stamp >= car.start_time + car.time_to_intersection):
         car.through_intersection = True
         car.wait_time = time_stamp - (car.start_time + car.time_to_intersection)
