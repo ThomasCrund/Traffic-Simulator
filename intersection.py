@@ -88,7 +88,8 @@ class Intersection:
   def __init__(self, roads: List[Road], phases: List[Light_Phase]):
     self.roads = roads
     self.lights = {}
-    self.current_phase = Light_Phase([], red_time=0)
+    self.current_phase = phases[0]
+    self.current_phase.setPhase(Light_Colour.GREEN, time_stamp=0)
     self.next_phase = None
     for road in roads:
       self.lights[road.direction] = Light_Colour.RED
