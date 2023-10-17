@@ -14,11 +14,14 @@ class Sensor:
     self.triggered = triggered
 
 class Road:
-  def __init__(self, direction: int, sensors: List[Sensor]):
+  def __init__(self, direction: int, sensors: List[Sensor], min_time_between_cars = 2):
     self.direction = direction
     self.sensors = sensors
     self.current_cars: List[Car] = []
     self.past_cars: List[Car] = []
+    self.time_of_last_car = 0
+    self.min_time_between_cars = min_time_between_cars
+    
 
   def update_sensors(self, sensors_data: List[bool], light: Light_Colour, time_stamp: int):
     for sensor in self.sensors:
@@ -32,11 +35,12 @@ class Road:
     
     for car in self.current_cars:
       car.update_weight(light, time_stamp)
-      if (light != Light_Colour.RED and time_stamp >= car.start_time + car.time_to_intersection):
+      if light != Light_Colour.RED and time_stamp >= (car.start_time + car.time_to_intersection) and (time_stamp - self.time_of_last_car >= self.min_time_between_cars):
         car.through_intersection = True
         car.wait_time = time_stamp - (car.start_time + car.time_to_intersection)
         self.past_cars.append(car)
         self.current_cars.remove(car)
+        self.time_of_last_car = time_stamp
 
 
 class Light_Phase:
@@ -51,7 +55,7 @@ class Light_Phase:
     self.orange_time = orange_time
     self.red_time = red_time
     self.name = "PH("
-    self.fixed_mode  = fixed_mode
+    self.fixed_mode = fixed_mode
     for road in roads:
       self.name += str(road.direction) + " "
     self.name = self.name.strip()
@@ -61,7 +65,8 @@ class Light_Phase:
 
   def getWeight(self, time_stamp: int = 0):
     total_weight = 0.0
-    if (time_stamp - self.time_last_change) > self.default_green and self.current_colour == Light_Colour.RED:
+    print(self.name, time_stamp - self.time_last_change, self.default_green)
+    if (time_stamp - self.time_last_change) >= self.default_green and self.current_colour == Light_Colour.RED:
       total_weight += 0.1
     if not self.fixed_mode:
         for road in self.roads:
@@ -117,7 +122,7 @@ class Intersection:
         if new_weight > highest_weighting:
           highest_weighting = new_weight
           highest_phase = phase
-      
+      print(highest_weighting, highest_phase)
       # Set the next phase
       if highest_phase == self.current_phase:
         # Account for the current phase being the best
@@ -149,7 +154,7 @@ class Intersection:
           self.next_phase = None
     else:
       # Current Phase is Green or Orange, trying to make it Red once timers allow
-      self.next_phase.setPhase
+      self.next_phase.setPhase(Light_Colour.RED, time_stamp)
 
   def change_lights(self):
     for road in self.roads:
