@@ -40,7 +40,7 @@ class Road:
 
 
 class Light_Phase:
-  def __init__(self, roads: List[Road], min_green = 3, max_green = 150, orange_time = 3, red_time = 3):
+  def __init__(self, roads: List[Road], min_green = 3, max_green = 150, orange_time = 3, red_time = 3, fixed_mode = False):
     self.roads = roads
     self.orange_time = 3
     self.current_colour = Light_Colour.RED
@@ -50,6 +50,7 @@ class Light_Phase:
     self.orange_time = orange_time
     self.red_time = red_time
     self.name = "PH("
+    self.fixed_mode  = fixed_mode
     for road in roads:
       self.name += str(road.direction) + " "
     self.name = self.name.strip()
@@ -61,9 +62,10 @@ class Light_Phase:
     total_weight = 0.0
     if (time_stamp - self.time_last_change) > 30 and self.current_colour == Light_Colour.RED:
       total_weight += 0.1
-    for road in self.roads:
-      for car in road.current_cars:
-        total_weight += car.weight
+    if not self.fixed_mode:
+        for road in self.roads:
+          for car in road.current_cars:
+            total_weight += car.weight
     return total_weight
 
   def setPhase(self, colour: Light_Colour, time_stamp: int):
