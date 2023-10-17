@@ -23,7 +23,7 @@ class Road:
     self.min_time_between_cars = min_time_between_cars
     
 
-  def update_sensors(self, sensors_data: List[bool], light: Light_Colour, time_stamp: int):
+  def update_sensors(self, sensors_data: List[bool], light: Light_Colour, time_stamp: int, can_cars_go_through = True):
     for sensor in self.sensors:
       sensor.update(sensors_data[sensor.num], time_stamp)
       if (sensor.triggered and sensor.sensor_order_num == 0):
@@ -35,6 +35,8 @@ class Road:
     
     for car in self.current_cars:
       car.update_weight(light, time_stamp)
+      if not can_cars_go_through:
+        continue
       if light != Light_Colour.RED and time_stamp >= (car.start_time + car.time_to_intersection) and (time_stamp - self.time_of_last_car >= self.min_time_between_cars):
         car.through_intersection = True
         car.wait_time = time_stamp - (car.start_time + car.time_to_intersection)
@@ -93,7 +95,7 @@ class Light_Phase:
     return False
 
 class Intersection:
-  def __init__(self, roads: List[Road], phases: List[Light_Phase]):
+  def __init__(self, roads: List[Road], phases: List[Light_Phase], minimum_time_after_green = 2):
     self.roads = roads
     self.lights = {}
     self.current_phase = phases[0]
@@ -102,10 +104,13 @@ class Intersection:
     for road in roads:
       self.lights[road.direction] = Light_Colour.RED
     self.phases = phases
+    self.minimum_time_after_green = minimum_time_after_green
 
   def process_sensor_input(self, sensors_data: List[bool], time_stamp: int):
+    change_recent = True
+    if (time_stamp - self.current_phase.time_last_change) >= self.minimum_time_after_green: change_recent = False
     for road in self.roads:
-      road.update_sensors(sensors_data, self.lights[road.direction], time_stamp)
+      road.update_sensors(sensors_data, self.lights[road.direction], time_stamp, not change_recent)
     self.change_phase(time_stamp)
     self.change_lights()
 

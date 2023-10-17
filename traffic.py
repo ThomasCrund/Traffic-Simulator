@@ -128,16 +128,17 @@ def setup_intersection():
     sensors: List[Sensor] = []
     for i in range(4):
         sensor = Sensor(num=i, time_to_intersection=6)
-        road = Road(direction=i, sensors=[sensor])
+        road = Road(direction=i, sensors=[sensor], min_time_between_cars=2)
         sensors.append(sensor)
         roads.append(road)
         print("\tDirection:", i, "initialised")
 
+    lights_fixed = False
     phases: List[Light_Phase] = []
-    phases.append(Light_Phase([roads[0], roads[2]]))
-    phases.append(Light_Phase([roads[1], roads[3]]))
+    phases.append(Light_Phase([roads[0], roads[2]], default_green=30, min_green = 3, max_green = 150, orange_time = 3, red_time = 3, fixed_mode=lights_fixed))
+    phases.append(Light_Phase([roads[1], roads[3]], default_green=30, min_green = 3, max_green = 150, orange_time = 3, red_time = 3, fixed_mode=lights_fixed))
 
-    intersection = Intersection(roads, phases)
+    intersection = Intersection(roads, phases, minimum_time_after_green=2)
     return (roads, sensors, intersection)
 
 
