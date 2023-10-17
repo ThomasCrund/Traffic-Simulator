@@ -134,7 +134,7 @@ def setup_intersection():
         print("\tDirection:", i, "initialised")
 
     phases: List[Light_Phase] = []
-    phases.append(Light_Phase([roads[0], roads[2]], fixed_mode = True))
+    phases.append(Light_Phase([roads[0], roads[2]], fixed_mode = True, default_green=5))
     phases.append(Light_Phase([roads[1], roads[3]], fixed_mode = True))
 
     intersection = Intersection(roads, phases)
