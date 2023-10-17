@@ -80,7 +80,7 @@ class Light_Phase:
     return self.current_colour
   
   def needToEnd(self, time_stamp: int):
-    if self.current_colour == Light_Colour.GREEN and self.time_last_change >= self.max_green:
+    if self.current_colour == Light_Colour.GREEN and (time_stamp - self.time_last_change) >= self.max_green:
       return True
     return False
 

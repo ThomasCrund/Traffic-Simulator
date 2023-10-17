@@ -74,10 +74,10 @@ def get_line_data(sensor_data, time_stamp, roads: List[Road], sensors: List[Sens
     # phases
     if (titles): outputString += "current" + ": "
     outputString += intersection.current_phase.name + ", " 
-    outputString += str(round(intersection.current_phase.getWeight(), 1)) + ", "
+    outputString += str(round(intersection.current_phase.getWeight(time_stamp), 1)) + ", "
 
     if (titles): outputString += "next" + ": "
-    if (intersection.next_phase): outputString += intersection.next_phase.name + ", " + str(round(intersection.next_phase.getWeight(), 1)) + ", "
+    if (intersection.next_phase): outputString += intersection.next_phase.name + ", " + str(round(intersection.next_phase.getWeight(time_stamp), 1)) + ", "
     else: outputString += "None, 0, "
 
     return outputString
