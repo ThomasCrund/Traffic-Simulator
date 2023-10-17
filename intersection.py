@@ -112,9 +112,9 @@ class Intersection:
           highest_phase = phase
       
       # Set the next phase
-      if highest_phase == self.change_phase:
+      if highest_phase == self.current_phase:
         # Account for the current phase being the best
-        if self.current_phase.needToEnd():
+        if self.current_phase.needToEnd(time_stamp):
           # Switch phase when it reaches the max time
           self.next_phase = highest_phase
           for phase in self.phases:
