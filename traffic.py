@@ -133,7 +133,7 @@ def setup_intersection():
         roads.append(road)
         print("\tDirection:", i, "initialised")
 
-    lights_fixed = True
+    lights_fixed = False
     phases: List[Light_Phase] = []
     phases.append(Light_Phase([roads[0], roads[2]], default_green=30, min_green = 3, max_green = 150, orange_time = 3, red_time = 3, fixed_mode=lights_fixed))
     phases.append(Light_Phase([roads[1], roads[3]], default_green=30, min_green = 3, max_green = 150, orange_time = 3, red_time = 3, fixed_mode=lights_fixed))
