@@ -120,11 +120,13 @@ class Intersection:
         # Account for the current phase being the best
         if self.current_phase.needToEnd(time_stamp):
           # Switch phase when it reaches the max time
-          self.next_phase = highest_phase
+          highest_phase = None
+          highest_weighting = -1
           for phase in self.phases:
             if phase.getWeight() > highest_weighting and phase != self.current_phase:
               highest_weighting = phase.getWeight()
               highest_phase = phase
+          self.next_phase = highest_phase
         else:
           return
       elif highest_phase == None:
