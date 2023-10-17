@@ -57,8 +57,10 @@ class Light_Phase:
     if (len(self.roads) == 0):
       self.orange_time = 0
 
-  def getWeight(self):
+  def getWeight(self, time_stamp: int = 0):
     total_weight = 0.0
+    if (time_stamp - self.time_last_change) > 30 and self.current_colour == Light_Colour.RED:
+      total_weight += 0.1
     for road in self.roads:
       for car in road.current_cars:
         total_weight += car.weight
@@ -107,8 +109,9 @@ class Intersection:
       highest_phase = None
       highest_weighting = 0
       for phase in self.phases:
-        if phase.getWeight() > highest_weighting:
-          highest_weighting = phase.getWeight()
+        new_weight = phase.getWeight(time_stamp)
+        if new_weight > highest_weighting:
+          highest_weighting = new_weight
           highest_phase = phase
       
       # Set the next phase
