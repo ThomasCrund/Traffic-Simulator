@@ -68,8 +68,8 @@ class Light_Phase:
   def getWeight(self, time_stamp: int = 0):
     total_weight = 0.0
     print(self.name, time_stamp - self.time_last_change, self.default_green)
-    if (time_stamp - self.time_last_change) >= self.default_green and self.current_colour == Light_Colour.RED:
-      total_weight += 0.1
+    if (time_stamp - self.time_last_change) >= self.default_green and self.current_colour == Light_Colour.GREEN:
+      total_weight -= 0.1
     if not self.fixed_mode:
         for road in self.roads:
           for car in road.current_cars:
@@ -121,15 +121,15 @@ class Intersection:
 
       # Calculate the highest weighting phase
       highest_phase = None
-      highest_weighting = 0
+      highest_weighting = -1
       for phase in self.phases:
         new_weight = phase.getWeight(time_stamp)
-        if new_weight > highest_weighting:
+        if new_weight > highest_weighting or (new_weight == highest_weighting and phase == self.current_phase):
           highest_weighting = new_weight
           highest_phase = phase
       print(highest_weighting, highest_phase)
       # Set the next phase
-      if highest_phase == self.current_phase:
+      if highest_phase == self.current_phase or highest_phase == None:
         # Account for the current phase being the best
         if self.current_phase.needToEnd(time_stamp):
           # Switch phase when it reaches the max time
@@ -142,8 +142,6 @@ class Intersection:
           self.next_phase = highest_phase
         else:
           return
-      elif highest_phase == None:
-        return
       else:
         # Set the next phase
         self.next_phase = highest_phase
