@@ -67,7 +67,6 @@ class Light_Phase:
 
   def getWeight(self, time_stamp: int = 0):
     total_weight = 0.0
-    print(self.name, time_stamp - self.time_last_change, self.default_green)
     if (time_stamp - self.time_last_change) >= self.default_green and self.current_colour == Light_Colour.GREEN:
       total_weight -= 0.1
     if not self.fixed_mode:
@@ -127,7 +126,6 @@ class Intersection:
         if new_weight > highest_weighting or (new_weight == highest_weighting and phase == self.current_phase):
           highest_weighting = new_weight
           highest_phase = phase
-      print(highest_weighting, highest_phase)
       # Set the next phase
       if highest_phase == self.current_phase or highest_phase == None:
         # Account for the current phase being the best

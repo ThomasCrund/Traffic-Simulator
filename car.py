@@ -23,7 +23,7 @@ class Car:
     if current_time >= self.start_time + self.time_to_intersection and light == Light_Colour.RED:
       self.wait_time = (current_time - self.start_time - self.time_to_intersection)
 
-    self.weight += self.wait_time
+    self.weight += (0.2) * self.wait_time 
 
     return self.weight
 
