@@ -19,9 +19,22 @@ def main():
     folder_dir = f'random_output/{vph}vph-L{length}-#{num_runs}_{random.randint(1,1000)}'
     os.mkdir(folder_dir)
     
+    sum_cars = 0
+    sum_not_finished = 0
+    sum_wait = 0
     for run_num in range(num_runs):
         output_file_name = f'{folder_dir}/{run_num}.csv'
-        run_output(output_file_name, vph, length)
+        final_data = run_output(output_file_name, vph, length)
+        sum_cars += final_data['num_cars_finished']
+        sum_not_finished += final_data['num_cars_not_finished']
+        sum_wait += final_data['average_wait']
+    
+    average_cars = sum_cars / num_runs
+    average_not_finished = sum_not_finished / num_runs
+    average_wait = sum_wait / num_runs
+    print("average finished cars", average_cars)
+    print("average not finished cars", average_not_finished)
+    print("average wait", average_wait)
 
 def run_random_line(time_stamp: int, intersection: Intersection, vph):
 
@@ -52,6 +65,7 @@ def run_output(output_file_name, vph, length):
         output.write(str(key) + "," + str(final_info[key]) + ",\n")
     print(output_file_name, final_info)
     output.close()
+    return final_info
 
 if __name__ == "__main__":
     main()
