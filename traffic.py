@@ -122,8 +122,8 @@ def get_final_stats(intersection: Intersection):
     final_info['average_wait'] = sum_weight / len(finished_cars)
     return final_info
 
-def setup_intersection():
-    print("###Setup Intersection###")
+def setup_intersection(debug = True):
+    if debug: print("###Setup Intersection###")
     roads: List[Road] = []
     sensors: List[Sensor] = []
     for i in range(4):
@@ -131,7 +131,7 @@ def setup_intersection():
         road = Road(direction=i, sensors=[sensor], min_time_between_cars=2)
         sensors.append(sensor)
         roads.append(road)
-        print("\tDirection:", i, "initialised")
+        if debug: print("\tDirection:", i, "initialised")
 
     lights_fixed = False
     phases: List[Light_Phase] = []
